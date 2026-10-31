@@ -28,6 +28,9 @@ LICENSE
 #define KRAYON_GET_B(c) ((uint8_t)((c) >> (8 * 1)))
 #define KRAYON_GET_A(c) ((uint8_t)((c) >> (8 * 0)))
 
+#define KRAYON_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define KRAYON_MAX(a, b) (((a) > (b)) ? (a) : (b))
+
 #define KRAYON_COLOR_RGBA(r, g, b, a)                                          \
     (((uint32_t)((r) & 0xFFu) << (8 * 3)) |                                    \
      ((uint32_t)((g) & 0xFFu) << (8 * 2)) |                                    \
@@ -86,6 +89,17 @@ void krayon_line(
     int y0,
     int x1,
     int y1,
+    KrayonColor color
+);
+
+void krayon_fill_triangle(
+    KrayonCanvas canvas,
+    int x1,
+    int y1,
+    int x2,
+    int y2,
+    int x3,
+    int y3,
     KrayonColor color
 );
 
@@ -209,6 +223,37 @@ void krayon_line(
         if (e2 <= dx) {
             err += dx;
             y0 += sy;
+        }
+    }
+}
+
+void krayon_fill_triangle(
+    KrayonCanvas canvas,
+    int x1,
+    int y1,
+    int x2,
+    int y2,
+    int x3,
+    int y3,
+    KrayonColor color
+)
+{
+    int left = KRAYON_MIN(x1, KRAYON_MIN(x2, x3));
+    int right = KRAYON_MAX(x1, KRAYON_MAX(x2, x3));
+    int top = KRAYON_MIN(y1, KRAYON_MIN(y2, y3));
+    int bottom = KRAYON_MAX(y1, KRAYON_MAX(y2, y3));
+    int d1, d2, d3;
+
+    for (int y = top; y <= bottom; y++) {
+        for (int x = left; x <= right; x++) {
+            d1 = (y - y1) * (x2 - x1) - (x - x1) * (y2 - y1);
+            d2 = (y - y2) * (x3 - x2) - (x - x2) * (y3 - y2);
+            d3 = (y - y3) * (x1 - x3) - (x - x3) * (y1 - y3);
+
+            if (((d1 > 0) || (d2 > 0) || (d3 > 0)) &&
+                ((d1 < 0) || (d2 < 0) || (d3 < 0)))
+                continue;
+            krayon_put_pixel(canvas, x, y, color);
         }
     }
 }
