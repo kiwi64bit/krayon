@@ -103,6 +103,13 @@ void krayon_fill_triangle(
     KrayonColor color
 );
 
+void krayon_fill_polygon(
+    KrayonCanvas canvas,
+    const int *points,
+    size_t point_count,
+    KrayonColor color
+);
+
 #endif // INCLUDE_KRAYON_H
 
 #ifdef KRAYON_IMPLEMENTATION
@@ -255,6 +262,28 @@ void krayon_fill_triangle(
                 continue;
             krayon_put_pixel(canvas, x, y, color);
         }
+    }
+}
+
+void krayon_fill_polygon(
+    KrayonCanvas canvas,
+    const int *points,
+    size_t point_count,
+    KrayonColor color
+)
+{
+    if (point_count == 0) return;
+    for (size_t i = 2; i < (point_count - 1) * 2; i += 2) {
+        krayon_fill_triangle(
+            canvas,
+            points[0],
+            points[1],
+            points[i + 0],
+            points[i + 1],
+            points[i + 2],
+            points[i + 3],
+            color
+        );
     }
 }
 
