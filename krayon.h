@@ -12,7 +12,6 @@ LICENSE
 #define INCLUDE_KRAYON_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
 #define KRAYON_COLOR_WHITE   0xFFFFFFFF
 #define KRAYON_COLOR_BLACK   0x000000FF
@@ -30,6 +29,7 @@ LICENSE
 
 #define KRAYON_MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define KRAYON_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define KRAYON_ABS(a)    (((a) < 0) ? -(a) : (a))
 
 #define KRAYON_COLOR_RGBA(r, g, b, a)                                          \
     (((uint32_t)((r) & 0xFFu) << (8 * 3)) |                                    \
@@ -203,8 +203,8 @@ void krayon_line(
 )
 {
     // Bresenham's line algorithm
-    int dx = abs(x1 - x0);
-    int dy = -abs(y1 - y0);
+    int dx = KRAYON_ABS(x1 - x0);
+    int dy = -KRAYON_ABS(y1 - y0);
 
     int sx = x0 < x1 ? 1 : -1;
     int sy = y0 < y1 ? 1 : -1;
